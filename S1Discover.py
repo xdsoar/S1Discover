@@ -1,3 +1,4 @@
+# encoding=utf8
 __author__ = 'eraserking'
 
 import argparse
@@ -7,6 +8,7 @@ import sys
 
 import requests
 from bs4 import BeautifulSoup
+import S1Render
 
 default_header = {'Host': 'bbs.saraba1st.com',
                   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36',
@@ -34,6 +36,7 @@ def main(args):
 
     img_proxy = {}
     thread_proxy = {}
+    cookies = {}
 
     if args.proxy:
         img_proxy['http'] = args.proxy
@@ -42,8 +45,11 @@ def main(args):
     if args.proxy and not args.only_for_image and not args.only_for_failed_image:
         thread_proxy['http'] = args.proxy
         thread_proxy['https'] = args.proxy
+    
+    if args.cookies:
+        cookies = args.cookies
 
-    first_page = download_single_page(create_url(args.thread, 1), 'get', download_proxy=thread_proxy)
+    first_page = download_single_page(create_url(args.thread, 1), 'get', download_proxy=thread_proxy, cookies=cookies)
     max_last_page_num = int(get_last_page_num(first_page))
     print('Page number of the last page in this thread is {}\n'.format(max_last_page_num))
 
@@ -79,9 +85,13 @@ def main(args):
         if len(a_href_in_current_page) > 0:
             a_href[page_num] = a_href_in_current_page
 
-    write_to_file('thread_{}_posts_{}_{}.txt'.format(args.thread, start_page, end_page), all_posts, first_page.title.text, False)
-    write_to_file('thread_{}_images_{}_{}.txt'.format(args.thread, start_page, end_page), img_src, first_page.title.text, True)
-    write_to_file('thread_{}_links_{}_{}.txt'.format(args.thread, start_page, end_page), a_href, first_page.title.text, True)
+    if args.html:
+        # TODO
+        print("hello there")
+    else:
+        write_to_file('thread_{}_posts_{}_{}.txt'.format(args.thread, start_page, end_page), all_posts, first_page.title.text, False)
+        write_to_file('thread_{}_images_{}_{}.txt'.format(args.thread, start_page, end_page), img_src, first_page.title.text, True)
+        write_to_file('thread_{}_links_{}_{}.txt'.format(args.thread, start_page, end_page), a_href, first_page.title.text, True)
 
     if args.download_image:
         failed_images = download_images(args.thread, img_src, img_proxy, args.only_for_failed_image)
@@ -212,9 +222,11 @@ def get_post_list(bs):
     return all_posts, img_src, a_href
 
 
-def download_single_page(url, method, data=None, download_proxy=None):
+def download_single_page(url, method, data=None, download_proxy=None, cookies=None):
+    if cookies != None:
+        cookies = {"Cookie": cookies}
     if method == 'get':
-        r = s.get(url, headers=default_header, data=data, proxies=download_proxy)
+        r = s.get(url, headers=default_header, data=data, proxies=download_proxy, cookies=cookies)
     if method == 'post':
         r = s.post(url, headers=default_header, data=data, proxies=download_proxy)
     return BeautifulSoup(r.content, 'html.parser', from_encoding='utf-8')
@@ -232,9 +244,11 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--start-page', dest='start_page', help='the page number to start with', type=int)
     parser.add_argument('-e', '--end-page', dest='end_page', help='the page number to end with', type=int)
     parser.add_argument('-d', '--download-image', dest='download_image', help='download images', default=False, action='store_true')
+    parser.add_argument('-c', '--cookies', dest='cookies', help='the cookies you want use to read post with right requirement')
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-o', '--only-for-image', dest='only_for_image', help='only take proxy for downloading images', default=False, action='store_true')
     group.add_argument('-f', '--only-for-failed-image', dest='only_for_failed_image', help='only take proxy for failed downloading images', default=False,
                        action='store_true')
+    group.add_argument('-h', '--html', dest='generate_html', help='generate html file instead of txt file', default= false, action='store_true')
     main(parser.parse_args())
