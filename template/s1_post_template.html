@@ -1,0 +1,40 @@
+					<tr>
+						<td class="pls" rowspan="2">
+							<divclass="pls favatar">
+								<div class="pi">
+									<div class="authi"><a target="_blank" class="xw1">{{post_author}}</a>
+									</div>
+								</div>
+						</td>
+						<td class="plc">
+							<div class="pi">
+								<div class="pti">
+									<div class="authi">
+										<em>发表于 {{post_time}}</em>
+										<span class="pipe">|</span>
+									</div>
+								</div>
+							</div>
+							<div class="pct">
+								<table cellspacing="0" cellpadding="0">
+									<tbody>
+										<tr>
+											<td class="t_f">
+												{% if quote_author != None %}
+												<div class="quote">
+													<blockquote>
+														<font size="2">
+															<font color="#999999">{{quote_author}} 发表于 {{quote_time}}</font></a>
+														</font><br>
+														{{quote_content}}
+													</blockquote>
+												</div>
+												{% endif %}
+												{{post_content}}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</td>
+					</tr>

@@ -1,0 +1,39 @@
+<body id="nv_forum" class="pg_viewthread">
+
+	<div id="postlist" class="pl bm">
+		<table cellspacing="0" cellpadding="0">
+			<tbody>
+				<tr>
+					<td class="pls ptn pbn">
+						<div id="tath" class="cl">
+							楼主: <a>{{upname}}</a>
+						</div>
+					</td>
+					<td class="plc ptm pbn vwthd">
+
+						<h1 class="ts">
+								{% if catalog != None %} <a>{{catalog}}</a> {% endif %}
+							<span id="thread_subject">{{title}}</span>
+						</h1>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div>
+			<table class="plhin" cellspacing="0" cellpadding="0">
+				<tbody>
+					{{postlist}}
+				</tbody>
+			</table>
+		</div>
+
+
+
+	</div>
+
+
+
+</body>
+
+</html>
